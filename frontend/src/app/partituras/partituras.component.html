@@ -1,0 +1,84 @@
+<div class="container mt-4">
+  <h2>Gestión de Partituras</h2>
+
+  <form [formGroup]="partituraForm" (ngSubmit)="onSubmit()" class="mb-4">
+    <div class="row">
+      <div class="col-md-6">
+        <div class="form-group">
+          <label for="titulo">Título</label>
+          <input type="text" class="form-control" id="titulo" formControlName="titulo">
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="form-group">
+          <label for="compositor">Compositor</label>
+          <input type="text" class="form-control" id="compositor" formControlName="compositor">
+        </div>
+      </div>
+    </div>
+
+    <div class="row mt-3">
+      <div class="col-md-6">
+        <div class="form-group">
+          <label for="dificultad">Dificultad</label>
+          <select class="form-control" id="dificultad" formControlName="dificultad">
+            <option value="PRINCIPIANTE">Principiante</option>
+            <option value="INTERMEDIO">Intermedio</option>
+            <option value="AVANZADO">Avanzado</option>
+          </select>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="form-group">
+          <label for="archivo_pdf">Archivo PDF</label>
+          <input type="file" class="form-control" id="archivo_pdf" (change)="onFileSelected($event)" accept=".pdf">
+        </div>
+      </div>
+    </div>
+
+    <div class="form-group mt-3">
+      <label for="descripcion">Descripción</label>
+      <textarea class="form-control" id="descripcion" formControlName="descripcion" rows="3"></textarea>
+    </div>
+
+    <div class="mt-3">
+      <button type="submit" class="btn btn-primary" [disabled]="!partituraForm.valid">
+        {{ editingId ? 'Actualizar' : 'Crear' }}
+      </button>
+      <button type="button" class="btn btn-secondary ms-2" (click)="resetForm()" *ngIf="editingId">
+        Cancelar
+      </button>
+    </div>
+  </form>
+
+  <div class="table-responsive">
+    <table class="table table-striped">
+      <thead>
+        <tr>
+          <th>Título</th>
+          <th>Compositor</th>
+          <th>Dificultad</th>
+          <th>PDF</th>
+          <th>Acciones</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let partitura of partituras$ | async">
+          <td>{{ partitura.titulo }}</td>
+          <td>{{ partitura.compositor }}</td>
+          <td>{{ partitura.dificultad }}</td>
+          <td>
+            <button class="btn btn-sm btn-link" *ngIf="partitura.archivo_pdf && typeof partitura.archivo_pdf === 'string'" 
+              (click)="downloadPdf(partitura.archivo_pdf)">
+              Ver PDF
+            </button>
+          </td>
+          <td>
+            <button class="btn btn-sm btn-info me-2" (click)="onEdit(partitura)">Editar</button>
+            <button class="btn btn-sm btn-danger" (click)="onDelete(partitura.id!)">Eliminar</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

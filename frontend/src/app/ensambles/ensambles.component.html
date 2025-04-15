@@ -1,0 +1,154 @@
+<div class="container mt-4">
+  <h2>Gestión de Ensambles</h2>
+
+  <form [formGroup]="ensambleForm" (ngSubmit)="onSubmit()" class="mb-4">
+    <!-- Basic Info Section -->
+    <div class="row mb-4">
+      <div class="col-md-6">
+        <div class="form-group">
+          <label for="nombre">Nombre del Ensamble</label>
+          <input type="text" class="form-control" id="nombre" formControlName="nombre" required>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="form-group">
+          <label for="director">Director</label>
+          <select class="form-control" id="director" formControlName="director" required>
+            <option value="">Seleccione un director</option>
+            <option *ngFor="let user of users$ | async" [value]="user.id">
+              {{ user.nombre }} {{ user.apellido }}
+            </option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <!-- Members Section -->
+    <div class="card mb-4">
+      <div class="card-header d-flex justify-content-between align-items-center">
+        <span>Miembros</span>
+        <input type="text" class="form-control w-25" placeholder="Buscar miembros..." 
+               #usersSearch (input)="filterItems('users', usersSearch.value)">
+      </div>
+      <div class="card-body" style="max-height: 300px; overflow-y: auto;">
+        <div class="row">
+          <div class="col-md-4" *ngFor="let user of filteredUsers">
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" 
+                     [id]="'user-'+(user.id || '')"
+                     [checked]="isSelected('miembros', user.id)"
+                     (change)="toggleSelection('miembros', user.id)">
+              <label class="form-check-label" [for]="'user-'+(user.id || '')">
+                {{ user.nombre }} {{ user.apellido }}
+              </label>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Instruments Section -->
+    <div class="card mb-4">
+      <div class="card-header d-flex justify-content-between align-items-center">
+        <span>Instrumentos</span>
+        <input type="text" class="form-control w-25" placeholder="Buscar instrumentos..." 
+               #instrumentosSearch (input)="filterItems('instrumentos', instrumentosSearch.value)">
+      </div>
+      <div class="card-body" style="max-height: 300px; overflow-y: auto;">
+        <div class="row">
+          <div class="col-md-4" *ngFor="let instrumento of filteredInstrumentos">
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" 
+                     [id]="'instrumento-'+(instrumento.id || '')"
+                     [checked]="isSelected('instrumentos', instrumento.id)"
+                     (change)="toggleSelection('instrumentos', instrumento.id)">
+              <label class="form-check-label" [for]="'instrumento-'+(instrumento.id || '')">
+                {{ instrumento.nombre }} ({{ instrumento.tipo }})
+              </label>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Sheet Music Section -->
+    <div class="card mb-4">
+      <div class="card-header d-flex justify-content-between align-items-center">
+        <span>Partituras</span>
+        <input type="text" class="form-control w-25" placeholder="Buscar partituras..." 
+               #partiturasSearch (input)="filterItems('partituras', partiturasSearch.value)">
+      </div>
+      <div class="card-body" style="max-height: 300px; overflow-y: auto;">
+        <div class="row">
+          <div class="col-md-6" *ngFor="let partitura of filteredPartituras">
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" 
+                     [id]="'partitura-'+(partitura.id || '')"
+                     [checked]="isSelected('partituras', partitura.id)"
+                     (change)="toggleSelection('partituras', partitura.id)">
+              <label class="form-check-label" [for]="'partitura-'+(partitura.id || '')">
+                {{ partitura.titulo }} - {{ partitura.compositor }}
+              </label>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Additional Info -->
+    <div class="form-group mb-4">
+      <label for="descripcion">Descripción</label>
+      <textarea class="form-control" id="descripcion" formControlName="descripcion" rows="3"></textarea>
+    </div>
+
+    <div class="form-check mb-4">
+      <input class="form-check-input" type="checkbox" id="activo" formControlName="activo">
+      <label class="form-check-label" for="activo">Ensemble activo</label>
+    </div>
+
+    <!-- Form Actions -->
+    <div class="d-flex justify-content-between">
+      <button type="submit" class="btn btn-primary" [disabled]="!ensambleForm.valid">
+        {{ editingId ? 'Actualizar' : 'Crear' }} Ensamble
+      </button>
+      <button type="button" class="btn btn-secondary" (click)="resetForm()" *ngIf="editingId">
+        Cancelar
+      </button>
+    </div>
+  </form>
+
+  <!-- Ensembles List -->
+  <div class="mt-5">
+    <h3>Lista de Ensambles</h3>
+    <div class="table-responsive">
+      <table class="table table-striped">
+        <thead>
+          <tr>
+            <th>Nombre</th>
+            <th>Director</th>
+            <th>Miembros</th>
+            <th>Instrumentos</th>
+            <th>Partituras</th>
+            <th>Estado</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+          <option *ngFor="let user of users$ | async" [value]="user.id">
+          <tr *ngFor="let ensamble of ensambles$ | async">
+            <td>{{ ensamble.nombre }}</td>
+            <td>{{ getDirectorName(ensamble.director) }}</td>
+            <td>{{ getMemberNames(ensamble.miembros) }}</td>
+            <td>{{ getInstrumentNames(ensamble.instrumentos) }}</td>
+            <td>{{ getPartituraTitles(ensamble.partituras) }}</td>
+            <td>{{ ensamble.activo ? 'Activo' : 'Inactivo' }}</td>
+            <td>
+              <button class="btn btn-sm btn-info me-2" (click)="onEdit(ensamble)">Editar</button>
+              <button class="btn btn-sm btn-danger" (click)="onDelete(ensamble.id!)">Eliminar</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

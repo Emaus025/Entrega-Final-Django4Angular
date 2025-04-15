@@ -1,0 +1,24 @@
+# Django
+Django==4.2
+
+# Django REST Framework
+djangorestframework==3.14
+
+# CORS Headers
+django-cors-headers==3.13
+
+# PostgreSQL driver
+psycopg2-binary==2.9.9
+
+# Gunicorn (para producción)
+gunicorn==20.1.0
+
+# Whitenoise (para servir archivos estáticos en producción)
+whitenoise==6.4.0
+
+# Dotenv (para manejar variables de entorno)
+python-dotenv==1.0.0
+
+# Pytest (para pruebas)
+pytest==7.4.0
+pytest-django==4.5.2

@@ -1,0 +1,19 @@
+{
+  "name": "backend",
+  "version": "1.0.0",
+  "description": "Backend API",
+  "type": "module",
+  "scripts": {
+    "seed": "node --loader ts-node/esm src/database-seeder.ts"
+  },
+  "dependencies": {
+    "@faker-js/faker": "^8.4.1",
+    "axios": "^1.8.4",
+    "form-data": "^4.0.2"
+  },
+  "devDependencies": {
+    "@types/form-data": "^2.2.1",
+    "@types/node": "^20.17.30",
+    "ts-node": "^10.9.2"
+  }
+}
